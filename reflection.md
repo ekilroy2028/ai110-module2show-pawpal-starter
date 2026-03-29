@@ -6,12 +6,13 @@
 
 - Briefly describe your initial UML design.
 - What classes did you include, and what responsibilities did you assign to each?
+My initial design centered on four core classes: **Owner**, **Pet**, **Task**, and **Scheduler**. I wanted a clean separation of responsibilities: Owners manage pets, pets manage tasks, and the Scheduler handles all the “thinking” — sorting, filtering, conflict detection, and recurrence. This structure felt intuitive and aligned well with the real-world relationships the app 
 
 **b. Design changes**
 
 - Did your design change during implementation?
 - If yes, describe at least one change and why you made it.
-
+As I moved from UML to implementation, I made a few adjustments. The biggest shift was simplifying the Scheduler so it never stores state; instead, it operates purely on data passed into it. Copilot initially suggested embedding scheduling logic inside the Owner class, but that felt like a violation of separation of concerns. I kept the logic centralized and modular, which made testing and UI integration much cleaner.
 ---
 
 ## 2. Scheduling Logic and Tradeoffs
