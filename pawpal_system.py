@@ -1,78 +1,6 @@
 from dataclasses import dataclass, field
-from datetime import date
-from typing import List
-
-# -------------------
-# Task Class
-# -------------------
-@dataclass
-class Task:
-    title: str
-    description: str
-    due_date: date
-    completed: bool = False
-
-    def mark_complete(self):
-        pass
-
-    def update_task(self, title: str, description: str, due_date: date):
-        pass
-
-
-# -------------------
-# Pet Class
-# -------------------
-@dataclass
-class Pet:
-    name: str
-    species: str
-    age: int
-    tasks: List[Task] = field(default_factory=list)
-
-    def add_task(self, task: Task):
-        pass
-
-    def view_tasks(self):
-        pass
-
-
-# -------------------
-# Owner Class
-# -------------------
-@dataclass
-class Owner:
-    name: str
-    pets: List[Pet] = field(default_factory=list)
-
-    def add_pet(self, pet: Pet):
-        pass
-
-    def remove_pet(self, pet: Pet):
-        pass
-
-    def view_pets(self):
-        pass
-
-
-# -------------------
-# Scheduler Class
-# -------------------
-class Scheduler:
-    def __init__(self):
-        self.tasks: List[Task] = []
-
-    def schedule_task(self, task: Task):
-        pass
-
-    def get_tasks_for_day(self, target_date: date):
-        pass
-
-    def get_overdue_tasks(self):
-        pass
-
-    from dataclasses import dataclass, field
-from datetime import datetime
-from typing import List
+from datetime import datetime, timedelta
+from typing import List, Optional
 
 
 @dataclass
@@ -84,8 +12,19 @@ class Task:
     completed: bool = False
 
     def mark_complete(self):
-        """Mark this task as complete."""
+        """Mark task as complete and return next occurrence if recurring."""
         self.completed = True
+        return self.next_occurrence()
+
+    def next_occurrence(self):
+        """Generate next occurrence for recurring tasks."""
+        if self.frequency == "daily":
+            return Task(self.description, self.time, self.frequency)
+
+        if self.frequency == "weekly":
+            return Task(self.description, self.time, self.frequency)
+
+        return None
 
 
 @dataclass
@@ -127,7 +66,41 @@ class Scheduler:
     """The brain that organizes and retrieves tasks across pets."""
 
     @staticmethod
-    def get_todays_schedule(owner: Owner):
-        """Return all tasks for an owner, sorted by time."""
-        tasks = owner.get_all_tasks()
+    def sort_by_time(tasks):
+        """Sort tasks by HH:MM time."""
         return sorted(tasks, key=lambda t: datetime.strptime(t[1].time, "%H:%M"))
+
+    @staticmethod
+    def filter_tasks(tasks, pet_name=None, completed=None):
+        """Filter tasks by pet name or completion status."""
+        filtered = tasks
+        if pet_name:
+            filtered = [t for t in filtered if t[0] == pet_name]
+        if completed is not None:
+            filtered = [t for t in filtered if t[1].completed == completed]
+        return filtered
+
+    @staticmethod
+    def detect_conflicts(tasks):
+        """Return list of conflicting task pairs."""
+        seen = {}
+        conflicts = []
+
+        for pet_name, task in tasks:
+            if task.time in seen:
+                conflicts.append((seen[task.time], (pet_name, task)))
+            else:
+                seen[task.time] = (pet_name, task)
+
+        return conflicts
+
+    @staticmethod
+    def handle_recurrence(pet: Pet):
+        """Add next occurrences for completed recurring tasks."""
+        new_tasks = []
+        for task in pet.tasks:
+            if task.completed:
+                next_task = task.next_occurrence()
+                if next_task:
+                    new_tasks.append(next_task)
+        pet.tasks.extend(new_tasks)

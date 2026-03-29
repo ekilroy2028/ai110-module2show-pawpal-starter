@@ -2,6 +2,16 @@
 
 You are building **PawPal+**, a Streamlit app that helps a pet owner plan care tasks for their pet.
 
+## 🧠 Smarter Scheduling
+
+PawPal+ includes several algorithmic features that make daily pet care easier:
+
+- **Time Sorting:** Tasks are automatically sorted using HH:MM timestamps.
+- **Filtering:** View tasks by pet or by completion status.
+- **Recurring Tasks:** Daily and weekly tasks regenerate automatically when completed.
+- **Conflict Detection:** The scheduler warns when two tasks share the same time.
+
+
 ## Scenario
 
 A busy pet owner needs help staying consistent with pet care. They want an assistant that can:

@@ -21,12 +21,22 @@ As I moved from UML to implementation, I made a few adjustments. The biggest shi
 
 - What constraints does your scheduler consider (for example: time, priority, preferences)?
 - How did you decide which constraints mattered most?
+To make the scheduler feel genuinely useful rather than just a container for tasks, I implemented four core algorithmic features: sorting, filtering, recurrence, and conflict detection. Each one addressed a specific limitation I noticed during the CLI-first testing phase.
 
+**Sorting** was the first improvement. Without it, tasks appeared in the order they were added, which felt arbitrary and unhelpful. Implementing a time-based sort using `datetime.strptime` immediately made the schedule feel more like a real agenda.
+
+**Filtering** came next. As soon as I added multiple pets and several tasks, it became clear that I needed a way to view tasks by pet or by completion status. The filtering method is intentionally simple—just a couple of list comprehensions—but it adds a lot of usability.
+
+**Recurring tasks** were the most interesting feature to design. I wanted the system to feel “alive,” meaning that completing a daily or weekly task should automatically generate the next occurrence. I kept the recurrence logic lightweight by reusing the same time and description, which works well for predictable routines like feeding or walks.
+
+Finally, **conflict detection** helps surface potential scheduling issues. The algorithm checks for tasks that share the same time and returns pairs of conflicts. It’s not a full calendar engine, but it’s enough to warn the user when two pets need attention simultaneously.
+
+Together, these features transform PawPal+ from a static list manager into a small but capable scheduling assistant.
 **b. Tradeoffs**
 
 - Describe one tradeoff your scheduler makes.
 - Why is that tradeoff reasonable for this scenario?
-
+One tradeoff I made in the scheduling logic was keeping conflict detection intentionally simple. The system only checks for exact time matches, not overlapping durations or multi-step tasks. This keeps the algorithm lightweight and easy to understand, but it means the scheduler won’t catch more complex conflicts. For the scope of this project, clarity and maintainability felt more important than implementing a full calendar-style overlap engine.
 ---
 
 ## 3. AI Collaboration
