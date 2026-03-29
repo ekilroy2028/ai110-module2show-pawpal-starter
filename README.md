@@ -1,53 +1,75 @@
-# PawPal+ (Module 2 Project)
+🐾 PawPal+
 
-You are building **PawPal+**, a Streamlit app that helps a pet owner plan care tasks for their pet.
+PawPal+ is a smart pet care management system that helps pet owners organize and prioritize daily responsibilities such as feeding, walking, medications, and appointments.
 
-## 🧠 Smarter Scheduling
+Built using Python and object-oriented programming (OOP), PawPal+ combines clean system design with algorithmic scheduling logic and an interactive Streamlit interface.
 
-PawPal+ includes several algorithmic features that make daily pet care easier:
+🚀 Features
+🐶 Pet & Task Management
+Add multiple pets under one owner
+Assign tasks with time and frequency (once, daily, weekly)
+Track task completion status
+⏰ Smart Scheduling
+Automatically sorts tasks by time
+Displays a clean daily schedule
+🔍 Filtering
+Filter tasks by:
+Pet name
+Completion status
+🔁 Recurring Tasks
+Daily and weekly tasks regenerate automatically after completion
+⚠️ Conflict Detection
+Detects tasks scheduled at the same time
+Provides warnings instead of breaking the system
+🧠 System Architecture
 
-- **Time Sorting:** Tasks are automatically sorted using HH:MM timestamps.
-- **Filtering:** View tasks by pet or by completion status.
-- **Recurring Tasks:** Daily and weekly tasks regenerate automatically when completed.
-- **Conflict Detection:** The scheduler warns when two tasks share the same time.
+The system is built using four main classes:
 
+Task → Represents an individual activity
+Pet → Stores pet details and task list
+Owner → Manages multiple pets
+Scheduler → Handles sorting, filtering, recurrence, and conflicts
+🖥️ How to Run the Project
+1. Run CLI Demo
+python main.py
+2. Run Streamlit App
+streamlit run app.py
+🧪 Testing PawPal+
 
-## Scenario
+Run the automated test suite with:
 
-A busy pet owner needs help staying consistent with pet care. They want an assistant that can:
+python -m pytest
+✅ Tests Cover:
+Task completion behavior
+Adding tasks to pets
+Sorting correctness
+Conflict detection
+Recurring task generation
 
-- Track pet care tasks (walks, feeding, meds, enrichment, grooming, etc.)
-- Consider constraints (time available, priority, owner preferences)
-- Produce a daily plan and explain why it chose that plan
+Confidence Level: ⭐⭐⭐⭐⭐ (5/5)
+All core features are tested and working reliably.
 
-Your job is to design the system first (UML), then implement the logic in Python, then connect it to the Streamlit UI.
+📸 Demo
 
-## What you will build
+(Add your screenshot here)
 
-Your final app should:
+<a href="/course_images/ai110/your_screenshot.png" target="_blank">
+  <img src='/course_images/ai110/your_screenshot.png' title='PawPal App' width='' alt='PawPal App' />
+</a>
 
-- Let a user enter basic owner + pet info
-- Let a user add/edit tasks (duration + priority at minimum)
-- Generate a daily schedule/plan based on constraints and priorities
-- Display the plan clearly (and ideally explain the reasoning)
-- Include tests for the most important scheduling behaviors
+🧩 Smarter Scheduling
 
-## Getting started
+PawPal+ includes algorithmic improvements that make it more than a simple task list:
 
-### Setup
+Uses Python’s sorted() with lambda functions for efficient time-based ordering
+Implements lightweight conflict detection using hash maps
+Automates recurring tasks using datetime and timedelta
+Keeps logic modular through a dedicated Scheduler class
+📦 Tech Stack
+Python
+Object-Oriented Programming (OOP)
+Streamlit
+Pytest
+👩‍💻 Author
 
-```bash
-python -m venv .venv
-source .venv/bin/activate  # Windows: .venv\Scripts\activate
-pip install -r requirements.txt
-```
-
-### Suggested workflow
-
-1. Read the scenario carefully and identify requirements and edge cases.
-2. Draft a UML diagram (classes, attributes, methods, relationships).
-3. Convert UML into Python class stubs (no logic yet).
-4. Implement scheduling logic in small increments.
-5. Add tests to verify key behaviors.
-6. Connect your logic to the Streamlit UI in `app.py`.
-7. Refine UML so it matches what you actually built.
+Elizabeth Kilroy
