@@ -102,3 +102,13 @@ If I had another iteration, I would redesign the task model to include actual da
 
 - What is one important thing you learned about designing systems or working with AI on this project?
 The biggest thing I learned is that AI is most effective when I treat it as a collaborator, not an answer machine. It’s great at generating options, explaining tradeoffs, and helping me think through design decisions, but I still have to make the final call. This project reinforced the importance of understanding my own system deeply enough to evaluate AI suggestions rather than accepting them blindly. It also showed me how valuable it is to design first, test early, and let the UI come last.
+
+-Copilot suggested combining scheduling logic into the Pet class, but I kept a separate Scheduler class to maintain clean separation of concerns.
+
+✔ Organization
+
+Using separate chat sessions helped me focus on one phase at a time and avoid mixing design, coding, and testing.
+
+✔ Lead Architect Insight
+
+I learned that AI is powerful, but I must evaluate and guide it to maintain a clean and scalable system.

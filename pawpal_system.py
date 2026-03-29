@@ -1,43 +1,39 @@
 from datetime import datetime, timedelta
 
-
+# -----------------------------
+# Task Class (Updated for Priority)
+# -----------------------------
+@dataclass
 class Task:
-    """Represents a single pet care task."""
+    description: str
+    time: str
+    frequency: str = "once"
+    completed: bool = False
+    priority: str = "Medium"  # NEW FIELD: High, Medium, Low
 
-    def __init__(self, description: str, time: str, frequency: str = "once"):
-        self.description = description
-        self.time = time  # Format: "HH:MM"
-        self.frequency = frequency  # once, daily, weekly
-        self.completed = False
 
-    def mark_complete(self):
-        """Mark the task as completed."""
-        self.completed = True
+# -----------------------------
+# Scheduler (Add Priority Sorting)
+# -----------------------------
+class Scheduler:
+    @staticmethod
+    def sort_by_priority_then_time(tasks):
+        """Sort tasks by priority first, then by time."""
+        priority_order = {"High": 0, "Medium": 1, "Low": 2}
 
-    def next_occurrence(self):
-        """Generate the next occurrence for recurring tasks."""
-        if self.frequency == "once":
-            return None
+        from datetime import datetime
+        fmt = "%H:%M"
 
-        base_time = datetime.strptime(self.time, "%H:%M")
-
-        if self.frequency == "daily":
-            next_time = base_time + timedelta(days=1)
-        elif self.frequency == "weekly":
-            next_time = base_time + timedelta(weeks=1)
-        else:
-            return None
-
-        return Task(
-            self.description,
-            next_time.strftime("%H:%M"),
-            self.frequency
+        return sorted(
+            tasks,
+            key=lambda t: (
+                priority_order.get(t[1].priority, 1),
+                datetime.strptime(t[1].time, fmt),
+            ),
         )
 
-    def __repr__(self):
-        """Readable representation for debugging."""
-        status = "✓" if self.completed else "✗"
-        return f"{self.time} | {self.description} ({self.frequency}) [{status}]"
+    # keep your other Scheduler methods below this
+
 
 
 class Pet:

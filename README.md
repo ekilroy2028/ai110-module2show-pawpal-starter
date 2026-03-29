@@ -21,7 +21,12 @@ Daily and weekly tasks regenerate automatically after completion
 ⚠️ Conflict Detection
 Detects tasks scheduled at the same time
 Provides warnings instead of breaking the system
-🧠 System Architecture
+🧠 Smarter Scheduling
+- Sorts tasks automatically by time
+- Detects scheduling conflicts
+- Supports daily and weekly recurring tasks
+- Filters tasks by pet and completion status
+
 
 The system is built using four main classes:
 
@@ -53,8 +58,11 @@ All core features are tested and working reliably.
 
 (Add your screenshot here)
 
-<a href="/course_images/ai110/your_screenshot.png" target="_blank">
-  <img src='/course_images/ai110/your_screenshot.png' title='PawPal App' width='' alt='PawPal App' />
+<a href="/course_images/ai110/paw_screenshot.png" target="_blank">
+  <img src='/course_images/ai110/paw_screenshot.png' title='PawPal App' width='' alt='PawPal App' />
+</a>
+<a href="/course_images/ai110/pawpal_screenshot.png" target="_blank">
+  <img src='/course_images/ai110/pawpal_screenshot.png' title='PawPal App' alt='PawPal App'/>
 </a>
 
 🧩 Smarter Scheduling

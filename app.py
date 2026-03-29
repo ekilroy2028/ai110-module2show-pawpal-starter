@@ -72,3 +72,22 @@ if conflicts:
     st.warning("⚠️ Task conflicts detected!")
     for (p1, t1), (p2, t2) in conflicts:
         st.write(f"- {p1} and {p2} both have tasks at **{t1.time}**")
+
+
+
+# -----------------------------
+#Challenge 4: Professional UI and Output Formatting
+# -----------------------------
+
+PRIORITY_EMOJI = {
+    "High": "🔴",
+    "Medium": "🟡",
+    "Low": "🟢",
+}
+
+FREQUENCY_EMOJI = {
+    "daily": "📅",
+    "weekly": "🗓️",
+    "once": "⏳",
+}
+
