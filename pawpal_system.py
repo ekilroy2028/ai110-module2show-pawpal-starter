@@ -1,4 +1,9 @@
+from dataclasses import dataclass
 from datetime import datetime, timedelta
+from typing import List, Tuple
+import json
+from pathlib import Path
+
 
 # -----------------------------
 # Task Class (Updated for Priority)
@@ -7,21 +12,130 @@ from datetime import datetime, timedelta
 class Task:
     description: str
     time: str
-    frequency: str = "once"
+    frequency: str = "once"      # once, daily, weekly
     completed: bool = False
-    priority: str = "Medium"  # NEW FIELD: High, Medium, Low
+    priority: str = "Medium"     # NEW FIELD: High, Medium, Low
+
+    def mark_complete(self):
+        self.completed = True
+
+    def next_occurrence(self):
+        """Return the next occurrence time for recurring tasks."""
+        if self.frequency == "daily":
+            return self.time
+        elif self.frequency == "weekly":
+            return self.time
+        return None
 
 
 # -----------------------------
-# Scheduler (Add Priority Sorting)
+# Pet Class
+# -----------------------------
+@dataclass
+class Pet:
+    name: str
+    species: str
+    tasks: List[Task] = None
+
+    def __post_init__(self):
+        if self.tasks is None:
+            self.tasks = []
+
+    def add_task(self, task: Task):
+        self.tasks.append(task)
+
+    def get_tasks(self):
+        return self.tasks
+
+
+# -----------------------------
+# Owner Class (with JSON Persistence)
+# -----------------------------
+@dataclass
+class Owner:
+    name: str
+    pets: List[Pet] = None
+
+    def __post_init__(self):
+        if self.pets is None:
+            self.pets = []
+
+    def add_pet(self, pet: Pet):
+        self.pets.append(pet)
+
+    def get_all_tasks(self) -> List[Tuple[str, Task]]:
+        """Return list of (pet_name, task) pairs."""
+        all_tasks = []
+        for pet in self.pets:
+            for task in pet.tasks:
+                all_tasks.append((pet.name, task))
+        return all_tasks
+
+    # -----------------------------
+    # JSON Persistence
+    # -----------------------------
+    def to_dict(self):
+        return {
+            "name": self.name,
+            "pets": [
+                {
+                    "name": p.name,
+                    "species": p.species,
+                    "tasks": [
+                        {
+                            "description": t.description,
+                            "time": t.time,
+                            "frequency": t.frequency,
+                            "completed": t.completed,
+                            "priority": t.priority,
+                        }
+                        for t in p.tasks
+                    ],
+                }
+                for p in self.pets
+            ],
+        }
+
+    @classmethod
+    def from_dict(cls, data):
+        owner = cls(data["name"])
+        for p_data in data.get("pets", []):
+            pet = Pet(p_data["name"], p_data["species"])
+            for t_data in p_data.get("tasks", []):
+                pet.add_task(
+                    Task(
+                        t_data["description"],
+                        t_data["time"],
+                        t_data.get("frequency", "once"),
+                        t_data.get("completed", False),
+                        t_data.get("priority", "Medium"),
+                    )
+                )
+            owner.add_pet(pet)
+        return owner
+
+    def save_to_json(self, path="data.json"):
+        Path(path).write_text(json.dumps(self.to_dict(), indent=2))
+
+    @classmethod
+    def load_from_json(cls, path="data.json"):
+        p = Path(path)
+        if not p.exists():
+            return None
+        data = json.loads(p.read_text())
+        return cls.from_dict(data)
+
+
+# -----------------------------
+# Scheduler Class
 # -----------------------------
 class Scheduler:
+
+    # Priority + Time Sorting (Challenge 3)
     @staticmethod
     def sort_by_priority_then_time(tasks):
         """Sort tasks by priority first, then by time."""
         priority_order = {"High": 0, "Medium": 1, "Low": 2}
-
-        from datetime import datetime
         fmt = "%H:%M"
 
         return sorted(
@@ -32,96 +146,52 @@ class Scheduler:
             ),
         )
 
-    # keep your other Scheduler methods below this
+    # Original time-only sorting (still available if needed)
+    @staticmethod
+    def sort_by_time(tasks):
+        fmt = "%H:%M"
+        return sorted(tasks, key=lambda t: datetime.strptime(t[1].time, fmt))
 
-
-
-class Pet:
-    """Represents a pet with its own task list."""
-
-    def __init__(self, name: str, species: str):
-        self.name = name
-        self.species = species
-        self.tasks = []
-
-    def add_task(self, task: Task):
-        """Add a task to the pet."""
-        self.tasks.append(task)
-
-    def get_tasks(self):
-        """Return all tasks for this pet."""
-        return self.tasks
-
-    def __repr__(self):
-        return f"{self.name} ({self.species})"
-
-
-class Owner:
-    """Represents an owner who manages multiple pets."""
-
-    def __init__(self, name: str):
-        self.name = name
-        self.pets = []
-
-    def add_pet(self, pet: Pet):
-        """Add a pet to the owner."""
-        self.pets.append(pet)
-
-    def get_all_tasks(self):
-        """Return all tasks across all pets as (pet_name, task)."""
-        all_tasks = []
-        for pet in self.pets:
-            for task in pet.get_tasks():
-                all_tasks.append((pet.name, task))
-        return all_tasks
-
-    def __repr__(self):
-        return f"Owner({self.name})"
-
-
-class Scheduler:
-    """Handles scheduling logic like sorting, filtering, conflicts, and recurrence."""
-
-    def sort_by_time(self, tasks):
-        """Return tasks sorted by time."""
-        return sorted(
-            tasks,
-            key=lambda item: datetime.strptime(item[1].time, "%H:%M")
-        )
-
-    def filter_tasks(self, tasks, pet_name=None, completed=None):
-        """Filter tasks by pet name and/or completion status."""
-        filtered = tasks
-
-        if pet_name is not None:
-            filtered = [t for t in filtered if t[0] == pet_name]
-
-        if completed is not None:
-            filtered = [t for t in filtered if t[1].completed == completed]
-
+    # Filtering
+    @staticmethod
+    def filter_tasks(tasks, pet_name=None, completed=None):
+        filtered = []
+        for p, t in tasks:
+            if pet_name and p != pet_name:
+                continue
+            if completed is not None and t.completed != completed:
+                continue
+            filtered.append((p, t))
         return filtered
 
-    def detect_conflicts(self, tasks):
-        """Detect tasks scheduled at the same time."""
+    # Conflict Detection
+    @staticmethod
+    def detect_conflicts(tasks):
+        seen = {}
         conflicts = []
-        seen_times = {}
-
         for pet_name, task in tasks:
-            if task.time in seen_times:
-                conflicts.append((seen_times[task.time], (pet_name, task)))
+            if task.time in seen:
+                conflicts.append((seen[task.time], (pet_name, task)))
             else:
-                seen_times[task.time] = (pet_name, task)
-
+                seen[task.time] = (pet_name, task)
         return conflicts
 
-    def handle_recurrence(self, pet: Pet):
-        """Create new tasks for completed recurring tasks."""
+    # Recurrence Handling
+    @staticmethod
+    def handle_recurrence(pet: Pet):
         new_tasks = []
-
         for task in pet.tasks:
-            if task.completed:
-                next_task = task.next_occurrence()
-                if next_task:
-                    new_tasks.append(next_task)
-
+            if task.completed and task.frequency in ("daily", "weekly"):
+                next_time = task.next_occurrence()
+                if next_time:
+                    new_tasks.append(
+                        Task(
+                            task.description,
+                            next_time,
+                            task.frequency,
+                            False,
+                            task.priority,
+                        )
+                    )
         pet.tasks.extend(new_tasks)
+        return len(new_tasks)
